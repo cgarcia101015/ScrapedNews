@@ -28,6 +28,12 @@ var ArticleSchema = new Schema({
 	summary: {
 		type: String,
 		required: true
+	},
+
+	//Saved
+	saved: {
+		type: Boolean,
+		default: false
 	}
 });
 

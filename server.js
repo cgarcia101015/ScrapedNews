@@ -31,7 +31,7 @@ mongoose.connect('mongodb://localhost/unit18Populater', { useNewUrlParser: true 
 
 // Routes
 
-// A GET route for scraping the echoJS website
+// A GET route for scraping the NY Times website
 app.get('/scrape', function(req, res) {
 	// First, we grab the body of the html with axios
 	axios.get('https://www.nytimes.com/').then(function(response) {
@@ -51,18 +51,17 @@ app.get('/scrape', function(req, res) {
 			// {
 			//    $(this).attr('rel'); // This is your rel value
 			// });
-			console.log(result);
 			// Create a new Article using the `result` object built from scraping
-			// db.Article
-			// 	.create(result)
-			// 	.then(function(dbArticle) {
-			// 		// View the added result in the console
-			// 		// console.log(dbArticle);
-			// 	})
-			// 	.catch(function(err) {
-			// 		// If an error occurred, log it
-			// 		console.log(err);
-			// 	});
+			db.Article
+				.create(result)
+				.then(function(dbArticle) {
+					// View the added result in the console
+					console.log(dbArticle);
+				})
+				.catch(function(err) {
+					// If an error occurred, log it
+					console.log(err);
+				});
 		});
 
 		// Send a message to the client
@@ -74,7 +73,7 @@ app.get('/scrape', function(req, res) {
 app.get('/articles', function(req, res) {
 	// Grab every document in the Articles collection
 	db.Article
-		.find({})
+		.find(req.query)
 		.then(function(dbArticle) {
 			// If we were able to successfully find Articles, send them back to the client
 			res.json(dbArticle);
@@ -83,6 +82,13 @@ app.get('/articles', function(req, res) {
 			// If an error occurred, send it to the client
 			res.json(err);
 		});
+});
+
+// Route to save Articles
+app.put('/articles/:id', function(req, res) {
+	db.Article.findOneAndUpdate({ _id: req.params.id }, { $set: req.body }, { new: true }).then(function(savedArticle) {
+		res.json(savedArticle);
+	});
 });
 
 // Route for grabbing a specific Article by id, populate it with it's note
