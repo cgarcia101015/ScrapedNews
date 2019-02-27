@@ -5,7 +5,7 @@ $(document).ready(function() {
 	// and "scrape new article" buttons
 	var articleContainer = $('.article-container');
 	$(document).on('click', '.btn.delete', removeFromSaved);
-	$(document).on('click', '.btn.notes');
+	// $(document).on('click', '.btn.notes');
 
 	$('.clear').on('click', handleArticleClear);
 	console.log('hello world');
