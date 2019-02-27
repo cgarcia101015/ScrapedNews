@@ -89,7 +89,7 @@ $(document).ready(function() {
 		// When we rendered the article initially, we attached a javascript object containing the headline id
 		// to the element using the .data method. Here we retrieve that.
 		var articleToSave = $(this).parents('.card').data();
-
+		console.log(articleToSave);
 		// Remove card from page
 		$(this).parents('.card').remove();
 
@@ -126,4 +126,5 @@ $(document).ready(function() {
 			initPage();
 		});
 	}
+	initPage();
 });

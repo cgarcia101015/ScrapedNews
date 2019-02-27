@@ -4,13 +4,14 @@ $(document).ready(function() {
 	// Adding event listeners to any dynamically generated "save article"
 	// and "scrape new article" buttons
 	var articleContainer = $('.article-container');
-	$(document).on('click', '.btn.save', handleArticleSave);
-	$(document).on('click', '.scrape-new', handleArticleScrape);
-	$('.clear').on('click', handleArticleClear);
+	$(document).on('click', '.btn.delete', removeFromSaved);
+	$(document).on('click', '.btn.notes');
 
+	$('.clear').on('click', handleArticleClear);
+	console.log('hello world');
 	function initPage() {
 		// Run an AJAX request for any unsaved headlines
-		$.get('/articles?saved=false').then(function(data) {
+		$.get('/articles?saved=true').then(function(data) {
 			articleContainer.empty();
 			// If we have headlines, render them to the page
 			if (data && data.length) {
@@ -47,7 +48,8 @@ $(document).ready(function() {
 				$("<a class='article-link' target='_blank' rel='noopener noreferrer'>")
 					.attr('href', article.url)
 					.text(article.headline),
-				$("<a class='btn btn-success save'>Save Article</a>")
+				$('<a class="btn btn-danger delete">Delete From Saved</a>'),
+				$('<a class="btn btn-info notes">Article Notes</a>')
 			)
 		);
 
@@ -84,39 +86,26 @@ $(document).ready(function() {
 		articleContainer.append(emptyAlert);
 	}
 
-	function handleArticleSave() {
+	function removeFromSaved() {
 		// This function is triggered when the user wants to save an article
 		// When we rendered the article initially, we attached a javascript object containing the headline id
 		// to the element using the .data method. Here we retrieve that.
-		var articleToSave = $(this).parents('.card').data();
-
+		var articleToUnSave = $(this).parents('.card').data();
 		// Remove card from page
 		$(this).parents('.card').remove();
 
-		articleToSave.saved = true;
+		articleToUnSave.saved = false;
 		// Using a patch method to be semantic since this is an update to an existing record in our collection
 		$.ajax({
 			method: 'PUT',
-			url: '/articles/' + articleToSave._id,
-			data: articleToSave
+			url: '/articles/' + articleToUnSave._id,
+			data: articleToUnSave
 		}).then(function(data) {
 			// If the data was saved successfully
-			if (data.saved) {
+			if (data.saved === false) {
 				// Run the initPage function again. This will reload the entire list of articles
 				initPage();
 			}
-		});
-	}
-
-	function handleArticleScrape() {
-		// This function handles the user clicking any "scrape new article" buttons
-		$.get('/scrape').then(function(data) {
-			// If we are able to successfully scrape the NYTIMES and compare the articles to those
-			// already in our collection, re render the articles on the page
-			// and let the user know how many unique articles we were able to save
-			initPage();
-			bootbox.alert($("<h3 class='text-center m-top-80'>").text(data.message));
-			console.log('Scraping');
 		});
 	}
 
@@ -126,4 +115,5 @@ $(document).ready(function() {
 			initPage();
 		});
 	}
+	initPage();
 });
