@@ -1,4 +1,5 @@
 NY Times Web Scraper
+
 This app scrapes all the articles from nytimes.com and saves them in a MongoDB database
 
 Check out the deployed app at https://radiant-mesa-95628.herokuapp.com/
